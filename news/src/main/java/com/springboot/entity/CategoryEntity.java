@@ -1,49 +1,43 @@
 package com.springboot.entity;
 
-import java.util.ArrayList;
+import javax.persistence.*;
 import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
 @Entity
 @Table(name = "Category")
 public class CategoryEntity extends BaseEntity {
-	@Column(nullable = false)
-	private String name;
+    @Column(nullable = false)
+    private String name;
 
-	@Column(nullable = false)
-	private String code;
+    @Column(nullable = false)
+    private String code;
 
-	@OneToMany(mappedBy = "category", fetch = FetchType.EAGER)
-	private List<NewsEntity> news = new ArrayList<>();
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    private List<NewsEntity> news;
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getCode() {
-		return code;
-	}
+    public String getCode() {
+        return code;
+    }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public void setCode(String code) {
+        this.code = code;
+    }
 
-	public List<NewsEntity> getNews() {
-		return news;
-	}
+    public List<NewsEntity> getNews() {
+        return news;
+    }
 
-	public void setNews(List<NewsEntity> news) {
-		this.news = news;
-	}
-	
-	
+    public void setNews(List<NewsEntity> news) {
+        this.news = news;
+    }
+
+
 }

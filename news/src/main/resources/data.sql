@@ -17,3 +17,12 @@ INSERT INTO user_role(userId,roleId) VALUES (1,1);
 INSERT INTO user_role(userId,roleId) VALUES (2,2);
 INSERT INTO user_role(userId,roleId) VALUES (3,3);
 INSERT INTO user_role(userId,roleId) VALUES (4,4);
+
+INSERT INTO category (createdBy, createdDate, modifiedBy, modifiedDate, code, name) VALUES ('Quân', '2023-10-07 14:54:13', 'Quân', '2023-10-07 15:54:13', 'the-thao', 'Thể Thao');
+INSERT INTO category (createdBy, createdDate, modifiedBy, modifiedDate, code, name) VALUES ('Quân', '2023-10-07 14:54:13', 'Quân', '2023-10-07 15:54:13', 'chinh-tri', 'Chính Trị');
+INSERT INTO category (createdBy, createdDate, modifiedBy, modifiedDate, code, name) VALUES ('Quân', '2023-10-07 14:54:13', 'Quân', '2023-10-07 15:54:13', 'thoi-su', 'Thời Sự');
+INSERT INTO category (createdBy, createdDate, modifiedBy, modifiedDate, code, name) VALUES ('Quân', '2023-10-07 14:54:13', 'Quân', '2023-10-07 15:54:13', 'kinh-doanh', 'Kinh Doanh');
+INSERT INTO category (createdBy, createdDate, modifiedBy, modifiedDate, code, name) VALUES ('Quân', '2023-10-07 14:54:13', 'Quân', '2023-10-07 15:54:13', 'giao-duc', 'Giáo Dục');
+INSERT INTO category (createdBy, createdDate, modifiedBy, modifiedDate, code, name) VALUES ('Quân', '2023-10-07 14:54:13', 'Quân', '2023-10-07 15:54:13', 'bat-dong-san', 'Bất Động Sản');
+INSERT INTO category (createdBy, createdDate, modifiedBy, modifiedDate, code, name) VALUES ('Quân', '2023-10-07 14:54:13', 'Quân', '2023-10-07 15:54:13', 'khoa-hoc', 'Khoa Học');
+INSERT INTO category (createdBy, createdDate, modifiedBy, modifiedDate, code, name) VALUES ('Quân', '2023-10-07 14:54:13', 'Quân', '2023-10-07 15:54:13', 'giai-tri', 'Giải Trí');

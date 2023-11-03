@@ -1,46 +1,45 @@
 package com.springboot.dto;
 
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
+import org.hibernate.validator.constraints.NotBlank;
 
 public class CommentDTO extends BaseDTO<CommentDTO> {
 
-	@NotBlank(message="{commentdto.content.notblank}")
-	@JsonView(value= {Views.AddNewView.class, Views.UpdateView.class, Views.SearchView.class})
-	private String content;
-	
-	@JsonView(value= {Views.AddNewView.class, Views.UpdateView.class, Views.SearchView.class})
-	@JsonIgnoreProperties("comments")
-	private UserDTO user;
-	
-	@JsonView(value= {Views.AddNewView.class, Views.UpdateView.class, Views.SearchView.class})
-	@JsonIgnoreProperties("comments")
-	private NewsDTO news;
+    @NotBlank(message = "{commentdto.content.notblank}")
+    @JsonView(value = {Views.AddNewView.class, Views.UpdateView.class, Views.SearchView.class})
+    private String content;
 
-	public String getContent() {
-		return content;
-	}
+    @JsonView(value = {Views.AddNewView.class, Views.UpdateView.class, Views.SearchView.class})
+    @JsonIgnoreProperties("comments")
+    private UserDTO user;
 
-	public void setContent(String content) {
-		this.content = content;
-	}
+    @JsonView(value = {Views.AddNewView.class, Views.UpdateView.class, Views.SearchView.class})
+    @JsonIgnoreProperties("comments")
+    private NewsDTO news;
 
-	public UserDTO getUser() {
-		return user;
-	}
+    public String getContent() {
+        return content;
+    }
 
-	public void setUser(UserDTO user) {
-		this.user = user;
-	}
+    public void setContent(String content) {
+        this.content = content;
+    }
 
-	public NewsDTO getNews() {
-		return news;
-	}
+    public UserDTO getUser() {
+        return user;
+    }
 
-	public void setNews(NewsDTO news) {
-		this.news = news;
-	}
+    public void setUser(UserDTO user) {
+        this.user = user;
+    }
+
+    public NewsDTO getNews() {
+        return news;
+    }
+
+    public void setNews(NewsDTO news) {
+        this.news = news;
+    }
 
 }

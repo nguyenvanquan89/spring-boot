@@ -1,86 +1,77 @@
 package com.springboot.entity;
 
-import java.util.ArrayList;
+import javax.persistence.*;
 import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
 @Entity
 @Table(name = "News")
 public class NewsEntity extends BaseEntity {
 
-	@Column(name = "title", nullable = false)
-	private String title;
+    @Column(name = "title", nullable = false)
+    private String title;
 
-	@Column(name = "thumbnail")
-	private String thumbnail;
+    @Column(name = "thumbnail")
+    private String thumbnail;
 
-	@Column(name = "shortDescription")
-	private String shortDescription;
+    @Column(name = "shortDescription", columnDefinition = "TEXT")
+    private String shortDescription;
 
-	@Column(name = "content", nullable = false)
-	private String content;
+    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
+    private String content;
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "categoryId", nullable = false)
-	private CategoryEntity category;
-	
-	@OneToMany(mappedBy = "news", cascade = CascadeType.ALL)
-	private List<CommentEntity> comments = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoryId", nullable = false)
+    private CategoryEntity category;
 
-	public String getTitle() {
-		return title;
-	}
+    @OneToMany(mappedBy = "news", cascade = CascadeType.ALL)
+    private List<CommentEntity> comments;
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public String getThumbnail() {
-		return thumbnail;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public void setThumbnail(String thumbnail) {
-		this.thumbnail = thumbnail;
-	}
+    public String getThumbnail() {
+        return thumbnail;
+    }
 
-	public String getShortDescription() {
-		return shortDescription;
-	}
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
 
-	public void setShortDescription(String shortDescription) {
-		this.shortDescription = shortDescription;
-	}
+    public String getShortDescription() {
+        return shortDescription;
+    }
 
-	public String getContent() {
-		return content;
-	}
+    public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
+    }
 
-	public void setContent(String content) {
-		this.content = content;
-	}
+    public String getContent() {
+        return content;
+    }
 
-	public CategoryEntity getCategory() {
-		return category;
-	}
+    public void setContent(String content) {
+        this.content = content;
+    }
 
-	public void setCategory(CategoryEntity category) {
-		this.category = category;
-	}
+    public CategoryEntity getCategory() {
+        return category;
+    }
 
-	public List<CommentEntity> getComments() {
-		return comments;
-	}
+    public void setCategory(CategoryEntity category) {
+        this.category = category;
+    }
 
-	public void setComments(List<CommentEntity> comments) {
-		this.comments = comments;
-	}
+    public List<CommentEntity> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<CommentEntity> comments) {
+        this.comments = comments;
+    }
 
 }

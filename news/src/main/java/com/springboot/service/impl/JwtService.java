@@ -42,34 +42,34 @@ public class JwtService implements UserDetailsService {
 	 * Load user when authenticate and access via json web token
 	 */
 	@Override
-	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-		UserEntity user = userRepo.findOneByUserName(userName);
+		UserEntity user = userRepo.findOneByUsername(username);
 
 		if (user != null) {
-			return new User(user.getUserName(), user.getPassword(), getAuthority(user));
+			return new User(user.getUsername(), user.getPassword(), getAuthority(user));
 		} else {
-			throw new UsernameNotFoundException("User not found with username: " + userName);
+			throw new UsernameNotFoundException("User not found with username: " + username);
 		}
 	}
 
 	/**
-	 * authenticate by user name and password
+	 * authenticate by username and password
 	 * 
 	 * @param jwtRequest
 	 * @return
 	 * @throws Exception
 	 */
 	public JwtResponse authenticateAndCreateJwt(JwtRequest jwtRequest) throws Exception {
-		String userName = jwtRequest.getUserName();
-		String userPassword = jwtRequest.getPassWord();
-		authenticate(userName, userPassword);
+		String username = jwtRequest.getUsername();
+		String userPassword = jwtRequest.getPassword();
+		authenticate(username, userPassword);
 
-		UserEntity user = userRepo.findOneByUserName(userName);
+		UserEntity user = userRepo.findOneByUsername(username);
 		UserDTO userDto = new UserDTO();
 		modelMapper.map(user, userDto);
 
-		String newGeneratedToken = jwtUtil.generateToken(userName);
+		String newGeneratedToken = jwtUtil.generateToken(username);
 
 		return new JwtResponse(userDto, newGeneratedToken);
 	}
@@ -82,7 +82,7 @@ public class JwtService implements UserDetailsService {
 		return authorities;
 	}
 
-	private void authenticate(String userName, String password) throws Exception {
-		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName, password));
+	private void authenticate(String username, String password) throws Exception {
+		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 	}
 }

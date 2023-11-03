@@ -21,7 +21,7 @@ public class JwtUtil {
 	
 
 	@Value("${security.jwt.token.validity}")
-    private int TOKEN_VALIDITY;
+    private long TOKEN_VALIDITY;
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);

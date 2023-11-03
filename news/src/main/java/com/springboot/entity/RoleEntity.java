@@ -1,53 +1,47 @@
 package com.springboot.entity;
 
-import java.util.ArrayList;
+import javax.persistence.*;
 import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
 
 @Entity
 @Table(name = "Role")
 public class RoleEntity extends BaseEntity {
 
-	@Column(nullable = false)
-	private String name;
-	
-	@Column(nullable = false)
-	private String code;
-	
-	/**
-	 * delete role then delete all user have relationship
-	 */
-	@ManyToMany(mappedBy = "roles", cascade = CascadeType.ALL)
-    private List<UserEntity> users = new ArrayList<>();
+    @Column(nullable = false)
+    private String name;
 
-	public String getName() {
-		return name;
-	}
+    @Column(nullable = false)
+    private String code;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * delete role then delete all user have relationship
+     */
+    @ManyToMany(mappedBy = "roles", cascade = CascadeType.ALL)
+    private List<UserEntity> users;
 
-	public String getCode() {
-		return code;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public List<UserEntity> getUsers() {
-		return users;
-	}
+    public String getCode() {
+        return code;
+    }
 
-	public void setUsers(List<UserEntity> users) {
-		this.users = users;
-	}
-	
-	
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public List<UserEntity> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<UserEntity> users) {
+        this.users = users;
+    }
+
+
 }

@@ -5,9 +5,10 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.springboot.util.IBaseModelMapper;
 
 @JsonInclude(value=Include.NON_NULL)
-public class BaseDTO<T> {
+public class BaseDTO<T> implements IBaseModelMapper {
 	
 	@JsonView(value= {Views.CommonView.class})
 	private Long id;
@@ -15,20 +16,14 @@ public class BaseDTO<T> {
 	@JsonView(value= {Views.AddNewView.class, Views.SearchView.class})
 	private Date createdDate;
 	
-	@JsonView(value= {Views.AddNewView.class, Views.UpdateView.class, Views.SearchView.class})
+	@JsonView(value= {Views.UpdateView.class, Views.SearchView.class})
 	private Date modifiedDate;
 	
 	@JsonView(value= {Views.AddNewView.class, Views.SearchView.class})
 	private String createdBy;
 	
-	@JsonView(value= {Views.AddNewView.class, Views.UpdateView.class, Views.SearchView.class})
+	@JsonView(value= {Views.UpdateView.class, Views.SearchView.class})
 	private String modifiedBy;
-	
-	@JsonView(value= {Views.DeleteView.class})
-	private long[] lstId;
-	
-	@JsonView(value= {Views.AddNewView.class, Views.UpdateView.class, Views.DeleteView.class})
-	private String message;
 	
 	public Long getId() {
 		return id;
@@ -60,17 +55,5 @@ public class BaseDTO<T> {
 	public void setModifiedBy(String modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
-	public long[] getLstId() {
-		return lstId;
-	}
-	public void setLstId(long[] lstId) {
-		this.lstId = lstId;
-	}
-	public String getMessage() {
-		return message;
-	}
-	public void setMessage(String message) {
-		this.message = message;
-	}
-	
+
 }

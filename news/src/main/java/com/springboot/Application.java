@@ -12,12 +12,5 @@ public class Application {
 		SpringApplication.run(Application.class, args);
 	}
 	
-	/**
-	 * Configuration model mapper to map entity and dto
-	 * @return
-	 */
-	@Bean
-    public ModelMapper getModelMapper() { 
-        return new ModelMapper(); 
-    } 
+
 }

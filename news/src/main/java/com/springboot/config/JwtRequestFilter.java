@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.springboot.util.MessageKeys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,14 +48,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			try {
 				username = jwtUtil.getUsernameFromToken(jwtToken);
 			} catch (IllegalArgumentException e) {
-				System.out.println(messageSource.getMessage("msg.jwt.unable", null, request.getLocale()));
+				System.out.println(messageSource.getMessage(MessageKeys.JWT_UNABLE, null, request.getLocale()));
 			} catch (ExpiredJwtException e) {
-				System.out.println(messageSource.getMessage("msg.jwt.expired", null, request.getLocale()));
+				System.out.println(messageSource.getMessage(MessageKeys.JWT_EXPIRED, null, request.getLocale()));
 			} catch (SignatureException e) {
-				System.out.println(messageSource.getMessage("msg.jwt.signature.not.match", null, request.getLocale()));
+				System.out.println(messageSource.getMessage(MessageKeys.JWT_SIGNATURE_NOT_MATCH, null, request.getLocale()));
 			}
 		} else {
-			System.out.println(messageSource.getMessage("msg.jwt.not.start.bearer", null, request.getLocale()));
+			System.out.println(messageSource.getMessage(MessageKeys.JWT_NOT_START_BEARER, null, request.getLocale()));
 		}
 
 		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

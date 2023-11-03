@@ -1,16 +1,11 @@
 package com.springboot.exceptions;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.validation.ConstraintViolationException;
-
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.springboot.util.LocaleUtils;
+import com.springboot.util.MessageKeys;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
@@ -25,111 +20,125 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import javax.validation.ConstraintViolationException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-	
-	@Autowired
-	private MessageSource messageSource;
 
-	/**
-	 * Validate input data and then show errors
-	 */
-	@Override
-	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-			HttpHeaders headers, HttpStatus status, WebRequest request) {
-		Map<String, Object> body = new HashMap<>();
-		body.put("timestamp", new Date());
-		body.put("status", status.value());
+    @Autowired
+    private LocaleUtils localeUtils;
 
-		List<String> errors = ex.getBindingResult().getAllErrors().stream()
-				.map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());
+    /**
+     * Validate input data and then show errors
+     */
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex,
+            HttpHeaders headers, HttpStatus status, WebRequest request) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", new Date());
+        body.put("status", status.value());
 
-		body.put("message", errors);
+        List<String> errors = ex.getBindingResult().getAllErrors().stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());
 
-		return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
-	}
+        body.put("message", errors);
 
-	@ExceptionHandler(ResourceNotFoundException.class )
-	public ResponseEntity<?> resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
-		Map<String, Object> body = new HashMap<>();
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
 
-		body.put("message", ex.getMessage());
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<?> resourceNotFoundException(
+            ResourceNotFoundException ex, WebRequest request) {
+        Map<String, Object> body = new HashMap<>();
 
-		return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
-	}
+        body.put("message", ex.getMessage());
 
-	@ExceptionHandler(ConstraintViolationException.class)
-	public ResponseEntity<?> constraintViolationException(ConstraintViolationException ex, WebRequest request) {
-		List<String> errors = new ArrayList<>();
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
 
-		ex.getConstraintViolations().forEach(cv -> errors.add(cv.getMessage()));
+    @ExceptionHandler(DuplicateItemException.class)
+    public ResponseEntity<?> duplicateItemException(
+            DuplicateItemException ex, WebRequest request) {
+        Map<String, Object> body = new HashMap<>();
 
-		Map<String, Object> body = new HashMap<>();
-		body.put("message", errors);
+        body.put("message", ex.getMessage());
 
-		return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
-	}
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
 
-	@ExceptionHandler({ AccessDeniedException.class })
-	public ResponseEntity<?> handleAccessDeniedException(Exception ex, WebRequest request) {
-		Map<String, Object> body = new HashMap<>();
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<?> constraintViolationException(
+            ConstraintViolationException ex, WebRequest request) {
+        List<String> errors = new ArrayList<>();
 
-		body.put("message", ex.getMessage());
-		body.put("status", HttpStatus.FORBIDDEN);
-		
-		return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.FORBIDDEN);
-	}
-	
-	/**
-	 * Handle Runtime exception (BadCredentialsException, DisabledException, EmptyResultDataAccessException...)
-	 * @param ex
-	 * @param request
-	 * @return
-	 */
-	@ExceptionHandler(value = RuntimeException.class)
-	public ResponseEntity<Object> handleRuntimeException(RuntimeException ex, WebRequest request) {
-		Map<String, Object> body = new HashMap<>();
+        ex.getConstraintViolations().forEach(cv -> errors.add(cv.getMessage()));
 
-		String msg = "";
-		if(ex instanceof BadCredentialsException) {//error authenticate
-			msg = messageSource.getMessage("errors.jwt.username.password.wrong", null, request.getLocale());
-		} else if(ex instanceof DisabledException) {
-			msg = messageSource.getMessage("errors.jwt.username.disabled", null, request.getLocale());
-		} else if (ex instanceof EmptyResultDataAccessException) {
-			msg = messageSource.getMessage("errors.empty.result.data.access", null, request.getLocale());
-		}
-		
-		body.put("errorDetail", ex.getMessage());
-		body.put("message", msg);
-		body.put("status", HttpStatus.BAD_REQUEST);
-		
-		return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.BAD_REQUEST);
-	}
+        Map<String, Object> body = new HashMap<>();
+        body.put("message", errors);
+        ex.printStackTrace();
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
 
-	/**
-	 * handle Exception Internal (JsonParseException, InvalidFormatException, JsonMappingException...)
-	 */
-	@Override
-	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
-			HttpStatus status, WebRequest request) {
-		Map<String, Object> bodyErrs = new HashMap<>();
-		String msg = "";
-		if(ex.getCause() instanceof JsonParseException 
-				|| ex.getCause() instanceof InvalidFormatException
-				|| ex.getCause() instanceof JsonMappingException) {
-			msg = messageSource.getMessage("errors.json.parse", null, request.getLocale());
-		}
-		
-		bodyErrs.put("errorDetail", ex.getMessage());
-		bodyErrs.put("message", msg);
-		bodyErrs.put("status", status);
-		
-		return new ResponseEntity<>(bodyErrs, new HttpHeaders(), HttpStatus.BAD_REQUEST);
-	}
-	
+    @ExceptionHandler({AccessDeniedException.class})
+    public ResponseEntity<?> handleAccessDeniedException(Exception ex, WebRequest request) {
+        Map<String, Object> body = new HashMap<>();
+
+        body.put("message", ex.getMessage());
+        body.put("status", HttpStatus.FORBIDDEN);
+
+        return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.FORBIDDEN);
+    }
+
+    /**
+     * Handle Runtime exception (BadCredentialsException, DisabledException, EmptyResultDataAccessException...)
+     *
+     * @param ex
+     * @param request
+     * @return
+     */
+    @ExceptionHandler(value = RuntimeException.class)
+    public ResponseEntity<Object> handleRuntimeException(RuntimeException ex, WebRequest request) {
+        Map<String, Object> body = new HashMap<>();
+
+        String msg = "";
+        if (ex instanceof BadCredentialsException) {//error authenticate
+            msg = localeUtils.getMessageByKey(MessageKeys.JWT_USERNAME_PASSWORD_WRONG, null);
+        } else if (ex instanceof DisabledException) {
+            msg = localeUtils.getMessageByKey(MessageKeys.JWT_USERNAME_DISABLED, null);
+        } else if (ex instanceof EmptyResultDataAccessException) {
+            msg = localeUtils.getMessageByKey(MessageKeys.EMPTY_RESULT_DATA_ACCESS, null);
+        }
+
+        body.put("errorDetail", ex.getMessage());
+        body.put("message", msg);
+        body.put("status", HttpStatus.BAD_REQUEST);
+        ex.printStackTrace();
+        return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * handle Exception Internal (JsonParseException, InvalidFormatException, JsonMappingException...)
+     */
+    @Override
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
+                                                             HttpStatus status, WebRequest request) {
+        Map<String, Object> bodyErrs = new HashMap<>();
+        String msg = "";
+        if (ex.getCause() instanceof JsonParseException
+                || ex.getCause() instanceof InvalidFormatException
+                || ex.getCause() instanceof JsonMappingException) {
+            msg = localeUtils.getMessageByKey(MessageKeys.JSON_PARSE_ERROR, null);
+        }
+
+        bodyErrs.put("errorDetail", ex.getMessage());
+        bodyErrs.put("message", msg);
+        bodyErrs.put("status", status);
+        ex.printStackTrace();
+        return new ResponseEntity<>(bodyErrs, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
 
 }

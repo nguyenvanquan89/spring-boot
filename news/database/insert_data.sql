@@ -4,6 +4,10 @@ INSERT INTO category (createdBy, createdDate, modifiedBy, modifiedDate, code, na
 INSERT INTO category (createdBy, createdDate, modifiedBy, modifiedDate, code, name) VALUES ('Quân', '2023-10-07 14:54:13', 'Quân', '2023-10-07 15:54:13', 'chinh-tri', 'Chính Trị');
 INSERT INTO category (createdBy, createdDate, modifiedBy, modifiedDate, code, name) VALUES ('Quân', '2023-10-07 14:54:13', 'Quân', '2023-10-07 15:54:13', 'thoi-su', 'Thời Sự');
 INSERT INTO category (createdBy, createdDate, modifiedBy, modifiedDate, code, name) VALUES ('Quân', '2023-10-07 14:54:13', 'Quân', '2023-10-07 15:54:13', 'kinh-doanh', 'Kinh Doanh');
+INSERT INTO category (createdBy, createdDate, modifiedBy, modifiedDate, code, name) VALUES ('Quân', '2023-10-07 14:54:13', 'Quân', '2023-10-07 15:54:13', 'giao-duc', 'Giáo Dục');
+INSERT INTO category (createdBy, createdDate, modifiedBy, modifiedDate, code, name) VALUES ('Quân', '2023-10-07 14:54:13', 'Quân', '2023-10-07 15:54:13', 'bat-dong-san', 'Bất Động Sản');
+INSERT INTO category (createdBy, createdDate, modifiedBy, modifiedDate, code, name) VALUES ('Quân', '2023-10-07 14:54:13', 'Quân', '2023-10-07 15:54:13', 'khoa-hoc', 'Khoa Học');
+INSERT INTO category (createdBy, createdDate, modifiedBy, modifiedDate, code, name) VALUES ('Quân', '2023-10-07 14:54:13', 'Quân', '2023-10-07 15:54:13', 'giai-tri', 'Giải Trí');
 
 
 insert into role(code,name,createdBy,createdDate,modifiedBy,modifiedDate) values('ADMIN','Quản trị','Quân','2023-09-18 23:18:44','Quân','2023-09-18 23:18:44');

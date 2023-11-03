@@ -1,91 +1,126 @@
 package com.springboot.entity;
 
-import java.util.ArrayList;
+import javax.persistence.*;
 import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "User")
 public class UserEntity extends BaseEntity {
 
-	@Column(name = "userName", updatable = false, nullable = false)
-	private String userName;
+    @Column(name = "username", updatable = false, nullable = false)
+    private String username;
 
-	@Column(name = "passWord", nullable = false)
-	private String password;
+    @Column(name = "passWord", nullable = false)
+    private String password;
 
-	@Column(name = "fullName")
-	private String fullName;
+    @Column(name = "fullName")
+    private String fullName;
 
-	@Column(nullable = false)
-	private int status;
+    @Column(nullable = false)
+    private int status;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "userId"), 
-	inverseJoinColumns = @JoinColumn(name = "roleId"), 
-	uniqueConstraints = { @UniqueConstraint(columnNames = { "userId", "roleId" }) })
-	private List<RoleEntity> roles = new ArrayList<>();
-	
-	
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-	private List<CommentEntity> comments = new ArrayList<>();
+    @Column(name = "facebookUserId")
+    private String facebookUserId;
 
-	public String getUserName() {
-		return userName;
-	}
+    @Column(name = "googleUserId")
+    private String googleUserId;
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "userId"),
+            inverseJoinColumns = @JoinColumn(name = "roleId"),
+            uniqueConstraints = {@UniqueConstraint(columnNames = {"userId", "roleId"})})
+    private List<RoleEntity> roles;
 
-	public String getPassword() {
-		return password;
-	}
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<CommentEntity> comments;
 
-	public String getFullName() {
-		return fullName;
-	}
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<SocialAccountEntity> socialAccounts;
 
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
-	}
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<TokenEntity> tokens;
 
-	public int getStatus() {
-		return status;
-	}
 
-	public void setStatus(int status) {
-		this.status = status;
-	}
+    public String getUsername() {
+        return username;
+    }
 
-	public List<RoleEntity> getRoles() {
-		return roles;
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	public void setRoles(List<RoleEntity> roles) {
-		this.roles = roles;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	public List<CommentEntity> getComments() {
-		return comments;
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	public void setComments(List<CommentEntity> comments) {
-		this.comments = comments;
-	}
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public List<RoleEntity> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<RoleEntity> roles) {
+        this.roles = roles;
+    }
+
+    public List<CommentEntity> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<CommentEntity> comments) {
+        this.comments = comments;
+    }
+
+    public List<SocialAccountEntity> getSocialAccounts() {
+        return socialAccounts;
+    }
+
+    public void setSocialAccounts(List<SocialAccountEntity> socialAccounts) {
+        this.socialAccounts = socialAccounts;
+    }
+
+    public String getFacebookUserId() {
+        return facebookUserId;
+    }
+
+    public void setFacebookUserId(String facebookUserId) {
+        this.facebookUserId = facebookUserId;
+    }
+
+    public String getGoogleUserId() {
+        return googleUserId;
+    }
+
+    public void setGoogleUserId(String googleUserId) {
+        this.googleUserId = googleUserId;
+    }
+
+    public List<TokenEntity> getTokens() {
+        return tokens;
+    }
+
+    public void setTokens(List<TokenEntity> tokens) {
+        this.tokens = tokens;
+    }
+
 
 }
