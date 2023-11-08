@@ -1,26 +1,24 @@
 package com.springboot.util;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-
+import com.springboot.dto.UserDTO;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import java.util.*;
+import java.util.function.Function;
 
 @Component
 public class JwtUtil {
-	
-	@Value("${security.jwt.secret.key}")
-	private String SECRET_KEY;
-	
 
-	@Value("${security.jwt.token.validity}")
+    @Value("${security.jwt.secret.key}")
+    private String SECRET_KEY;
+
+
+    @Value("${security.jwt.token.validity}")
     private long TOKEN_VALIDITY;
 
     public String getUsernameFromToken(String token) {
@@ -34,7 +32,7 @@ public class JwtUtil {
 
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
-    	
+
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
@@ -53,16 +51,21 @@ public class JwtUtil {
 
     /**
      * Generate token by userName, secret_key, token_expriced
-     * @param userName
+     *
+     * @param userDto user dto
      * @return
      */
-    public String generateToken(String userName) {
+    public String generateToken(UserDTO userDto) {
 
         Map<String, Object> claims = new HashMap<>();
+        List<String> roleCodes = new ArrayList<>();
+        userDto.getRoles().forEach(roleDto -> roleCodes.add(roleDto.getCode()));
+        claims.put("roleCodes", roleCodes);
+        claims.put("userId", userDto.getId());
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userName)
+                .setSubject(userDto.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + TOKEN_VALIDITY * 1000))
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)

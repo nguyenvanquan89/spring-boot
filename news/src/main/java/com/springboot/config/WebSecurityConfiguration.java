@@ -48,7 +48,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/api/login",
                         "/api/users/register")
                 .permitAll()
-                .antMatchers(HttpMethod.GET, "/api/news/**")
+                .antMatchers(HttpMethod.GET, "/api/news**", "/api/news/**")
+                .permitAll()
+                .antMatchers(HttpMethod.GET,"/api/categories**")
                 .permitAll()
                 .antMatchers(HttpHeaders.ALLOW)
                 .permitAll()

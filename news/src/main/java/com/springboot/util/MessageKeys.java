@@ -5,6 +5,7 @@ public class MessageKeys {
     public static final String UPDATE_SUCCESS = "msg.update.success";
     public static final String DELETE_SUCCESS = "msg.delete.success";
     public static final String USERNAME_EXIST = "msg.username.exist";
+    public static final String USER_REGISTER_SUCCESS = "msg.user.register.success";
     public static final String JWT_UNABLE = "msg.jwt.unable";
     public static final String JWT_EXPIRED = "msg.jwt.expired";
     public static final String JWT_NOT_START_BEARER = "msg.jwt.not.start.bearer";
@@ -16,5 +17,6 @@ public class MessageKeys {
     public static final String FILE_TOO_LARGE_ERROR = "errors.file.too.large";
     public static final String FILE_UNSUPPORTED_MEDIA_TYPE = "errors.file.unsupported.mediatype";
     public static final String ITEM_NOT_FOUND = "errors.item.not.found";
+    public static final String ACCESS_DENIED = "errors.access.denied";
 
 }

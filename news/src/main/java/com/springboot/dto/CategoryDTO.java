@@ -70,6 +70,7 @@ public class CategoryDTO extends BaseDTO<CategoryDTO> {
         return mapper;
     }
 
+    //model map deep to get all news of category
     public PropertyMap<CategoryEntity, CategoryDTO> categoryMap(MappingUtils utils) {
         return new PropertyMap<CategoryEntity, CategoryDTO>() {
             @Override
@@ -89,7 +90,7 @@ public class CategoryDTO extends BaseDTO<CategoryDTO> {
                         return utils.mapList(new ArrayList<>(categoryEntity.getNews()), NewsDTO.class);
                     }
                 };
-                using(getSizeNews).map(source, destination.getTotalNews());
+                //using(getSizeNews).map(source, destination.getTotalNews());
                 //using(mapNews).map(source, destination.getNews());
 
             }

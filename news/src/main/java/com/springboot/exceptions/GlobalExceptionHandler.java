@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.springboot.util.LocaleUtils;
 import com.springboot.util.MessageKeys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -30,6 +32,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Autowired
     private LocaleUtils localeUtils;
 
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     /**
      * Validate input data and then show errors
      */
@@ -46,6 +50,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         body.put("message", errors);
 
+        logger.error(String.format("Error message: %s", errors));
+
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
@@ -55,7 +61,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         Map<String, Object> body = new HashMap<>();
 
         body.put("message", ex.getMessage());
-
+        logger.error(String.format("Error message: %s", ex.getMessage()));
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
@@ -65,7 +71,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         Map<String, Object> body = new HashMap<>();
 
         body.put("message", ex.getMessage());
-
+        logger.error(String.format("Error message: %s", ex.getMessage()));
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
@@ -78,7 +84,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         Map<String, Object> body = new HashMap<>();
         body.put("message", errors);
-        ex.printStackTrace();
+        logger.error(String.format("Error message: %s", errors));
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
@@ -86,9 +92,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<?> handleAccessDeniedException(Exception ex, WebRequest request) {
         Map<String, Object> body = new HashMap<>();
 
-        body.put("message", ex.getMessage());
+        String msg = localeUtils.getMessageByKey(MessageKeys.ACCESS_DENIED, null);
+        body.put("message", msg);
         body.put("status", HttpStatus.FORBIDDEN);
-
+        logger.error(String.format("Error message: %s", msg));
         return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.FORBIDDEN);
     }
 
@@ -110,12 +117,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             msg = localeUtils.getMessageByKey(MessageKeys.JWT_USERNAME_DISABLED, null);
         } else if (ex instanceof EmptyResultDataAccessException) {
             msg = localeUtils.getMessageByKey(MessageKeys.EMPTY_RESULT_DATA_ACCESS, null);
+        } else {
+            msg = ex.getMessage();
         }
 
         body.put("errorDetail", ex.getMessage());
         body.put("message", msg);
         body.put("status", HttpStatus.BAD_REQUEST);
-        ex.printStackTrace();
+        logger.error(String.format("Error message: %s", msg));
+        logger.error(String.format("Error detail message: %s", ex.getMessage()));
         return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
@@ -131,12 +141,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 || ex.getCause() instanceof InvalidFormatException
                 || ex.getCause() instanceof JsonMappingException) {
             msg = localeUtils.getMessageByKey(MessageKeys.JSON_PARSE_ERROR, null);
+        } else {
+            msg = ex.getMessage();
         }
 
         bodyErrs.put("errorDetail", ex.getMessage());
         bodyErrs.put("message", msg);
         bodyErrs.put("status", status);
-        ex.printStackTrace();
+        logger.error(String.format("Error message: %s", msg));
         return new ResponseEntity<>(bodyErrs, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 

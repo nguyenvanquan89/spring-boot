@@ -62,6 +62,10 @@ public class UserService extends BaseService<UserEntity> implements IUserService
 		return userRepo.findOneByUsername(username) != null;
 	}
 
-	
+	@Override
+	public UserEntity findOneByUsername(String username) {
+		return userRepo.findOneByUsername(username);
+	}
+
 
 }

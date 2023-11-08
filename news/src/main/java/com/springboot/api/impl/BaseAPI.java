@@ -10,7 +10,8 @@ import com.springboot.service.IBaseService;
 import com.springboot.util.LocaleUtils;
 import com.springboot.util.MappingUtils;
 import com.springboot.util.MessageKeys;
-import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +38,9 @@ public class BaseAPI<TDto extends BaseDTO<TDto>, TEntity extends BaseEntity>
     @Autowired
     private MappingUtils mappingUtils;
 
+
+    private static final Logger logger = LoggerFactory.getLogger(BaseAPI.class);
+
     @Override
     @GetMapping("/{id}")
     @JsonView({Views.SearchView.class})
@@ -45,11 +49,13 @@ public class BaseAPI<TDto extends BaseDTO<TDto>, TEntity extends BaseEntity>
             @PathVariable("id") Long id,
             TDto dto, TEntity entity)
             throws ResourceNotFoundException {
+        logger.info(String.format("find id=%d", id));
         entity = baseService.findOneById(id);
         if (entity == null) {
             Object[] obj = {id};
-            throw new ResourceNotFoundException(
-                    localeUtils.getMessageByKey(MessageKeys.ITEM_NOT_FOUND,obj));
+            String msg = localeUtils.getMessageByKey(MessageKeys.ITEM_NOT_FOUND,obj);
+            logger.error(String.format("error message: %s", msg));
+            throw new ResourceNotFoundException(msg);
         }
         mappingUtils.map(entity, dto);
         return new ResponseEntity<>(dto, HttpStatus.OK);
@@ -91,7 +97,7 @@ public class BaseAPI<TDto extends BaseDTO<TDto>, TEntity extends BaseEntity>
     @DeleteMapping
     @PreAuthorize("hasRole('ADMIN')")
     @JsonView(Views.DeleteView.class)
-    public ResponseEntity<?> delete(@RequestBody long[] ids) {
+    public ResponseEntity<?> delete(@RequestBody List<Long> ids) {
         baseService.delete(ids);
         String msg = localeUtils.getMessageByKey(MessageKeys.DELETE_SUCCESS, null);
         Map<String, Object> body = new HashMap<>();
@@ -105,19 +111,12 @@ public class BaseAPI<TDto extends BaseDTO<TDto>, TEntity extends BaseEntity>
     @JsonView(Views.SearchView.class)
     @PreAuthorize("hasAnyRole('ADMIN', 'AUTHOR', 'EDITOR', 'USER')")
     public ResponseEntity<?> findAll(
-            @RequestParam(name = "itemPerPage", required = false) String itemPerPage,
-            @RequestParam(name = "currentPage", required = false) String currentPage,
+            @RequestParam(defaultValue = "12") int itemPerPage,
+            @RequestParam(defaultValue = "1") int currentPage,
             TDto dto) {
-        int limit = 5; // set default
-        int page = 1; // set default
-        if (StringUtils.isNotBlank(itemPerPage)) {
-            limit = Integer.parseInt(itemPerPage);
-        }
-        if (StringUtils.isNotBlank(currentPage)) {
-            page = Integer.parseInt(currentPage);
-        }
+
         // find all in database
-        Pageable pageable = new PageRequest(page - 1, limit);
+        Pageable pageable = new PageRequest(currentPage - 1, itemPerPage);
         Page<TEntity> pageEntity = baseService.findAllByPageable(pageable);
 
         // Convert Entity to DTO
@@ -126,8 +125,8 @@ public class BaseAPI<TDto extends BaseDTO<TDto>, TEntity extends BaseEntity>
         Map<String, Object> body = new HashMap<>();
         body.put("totalRecord", pageEntity.getTotalElements());
         body.put("totalPage", pageEntity.getTotalPages());
-        body.put("itemPerPage", limit);
-        body.put("currentPage", page);
+        body.put("itemPerPage", itemPerPage);
+        body.put("currentPage", currentPage);
         body.put("lstResult", lstDto);
 
         return new ResponseEntity<>(body, HttpStatus.OK);

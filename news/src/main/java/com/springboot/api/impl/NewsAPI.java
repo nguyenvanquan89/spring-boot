@@ -1,6 +1,7 @@
 package com.springboot.api.impl;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.INewsAPI;
 import com.springboot.dto.NewsDTO;
 import com.springboot.dto.Views;
@@ -13,6 +14,9 @@ import com.springboot.util.MessageKeys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +24,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -28,9 +33,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/news")
@@ -44,6 +47,10 @@ public class NewsAPI extends BaseAPI<NewsDTO, NewsEntity> implements INewsAPI {
 
     @Autowired
     private INewsService newsService;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
     @Value("${file.upload.directory}")
     private String directoryUpload;
 
@@ -51,12 +58,13 @@ public class NewsAPI extends BaseAPI<NewsDTO, NewsEntity> implements INewsAPI {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @JsonView(Views.AddNewView.class)
     @PreAuthorize("hasAnyRole('ADMIN', 'AUTHOR', 'EDITOR')")
-    public ResponseEntity<?> create(@Valid @RequestPart("data") NewsDTO dto,
+    public ResponseEntity<?> create(@Valid @RequestPart("data") String strDto,
                                     NewsEntity entity,
                                     @RequestPart(value = "file", required = false) MultipartFile file)
             throws IOException {
 
-        dto.setThumbnail(storeFile(file));
+        NewsDTO dto = objectMapper.readValue(strDto, NewsDTO.class);
+        dto.setThumbnail(storeFile(file, dto.getThumbnail()));
         mappingUtils.mapFromDTO(dto, entity);
         entity = newsService.save(entity);
         mappingUtils.map(entity, dto);
@@ -71,11 +79,12 @@ public class NewsAPI extends BaseAPI<NewsDTO, NewsEntity> implements INewsAPI {
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @JsonView(Views.UpdateView.class)
     @PreAuthorize("hasAnyRole('ADMIN', 'AUTHOR', 'EDITOR')")
-    public ResponseEntity<?> update(@Valid @RequestPart("data") NewsDTO dto,
+    public ResponseEntity<?> update(@Valid @RequestPart("data") String strDto,
                                     NewsEntity entity,
                                     @RequestPart(value = "file", required = false) MultipartFile file)
             throws IOException {
-        dto.setThumbnail(storeFile(file));
+        NewsDTO dto = objectMapper.readValue(strDto, NewsDTO.class);
+        dto.setThumbnail(storeFile(file, dto.getThumbnail()));
         mappingUtils.mapFromDTO(dto, entity);
         entity = newsService.save(entity);
         mappingUtils.map(entity, dto);
@@ -86,7 +95,50 @@ public class NewsAPI extends BaseAPI<NewsDTO, NewsEntity> implements INewsAPI {
         return new ResponseEntity<>(body, HttpStatus.OK);
     }
 
-    private String storeFile(MultipartFile file) throws IOException {
+   /* @PutMapping(value = "/upload")
+    @JsonView(Views.UpdateView.class)
+    @PreAuthorize("hasAnyRole('ADMIN', 'AUTHOR', 'EDITOR')")
+    public ResponseEntity<?> updateNewsUploadImage(@Valid @RequestBody NewsDTO dto,
+                                                   MultipartHttpServletRequest request,
+                                                   NewsEntity entity) throws IOException {
+        NewsDTO dto = new NewsDTO();
+        Iterator<String> iterator = request.getFileNames();
+        MultipartFile file = request.getFile(iterator.next());
+        dto.setThumbnail(storeFile(file, dto.getThumbnail()));
+        mappingUtils.mapFromDTO(dto, entity);
+        entity = newsService.save(entity);
+        mappingUtils.map(entity, dto);
+        String msg = localeUtils.getMessageByKey(MessageKeys.UPDATE_SUCCESS, null);
+        Map<String, Object> body = new HashMap<>();
+        body.put("data", dto);
+        body.put("message", msg);
+        return new ResponseEntity<>(body, HttpStatus.OK);
+    }*/
+
+    @Override
+    @GetMapping("/s")
+    @JsonView(Views.SearchView.class)
+    public ResponseEntity<?> searchNews(@RequestParam(defaultValue = "12") int itemPerPage,
+                                        @RequestParam(defaultValue = "1") int currentPage,
+                                        @RequestParam(defaultValue = "0") long categoryId,
+                                        @RequestParam(defaultValue = "") String keyword) {
+        // find all in database
+        Pageable pageable = new PageRequest(currentPage - 1, itemPerPage);
+        Page<NewsEntity> pageEntity = newsService.searchNews(categoryId, keyword, pageable);
+
+        List<NewsDTO> lstDto = mappingUtils.mapList(pageEntity.getContent(), NewsDTO.class);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("totalRecord", pageEntity.getTotalElements());
+        body.put("totalPage", pageEntity.getTotalPages());
+        body.put("itemPerPage", itemPerPage);
+        body.put("currentPage", currentPage);
+        body.put("lstResult", lstDto);
+
+        return new ResponseEntity<>(body, HttpStatus.OK);
+    }
+
+    private String storeFile(MultipartFile file, String oldFileName) throws IOException {
         String uniqueFilename = "";
         if (file != null) {
             //check file size
@@ -112,6 +164,12 @@ public class NewsAPI extends BaseAPI<NewsDTO, NewsEntity> implements INewsAPI {
             }
             //get full path to save file
             Path destination = Paths.get(uploadDir.toString(), uniqueFilename);
+
+            //get full path of old file and delete
+            if (oldFileName != null && !StringUtils.isEmpty(oldFileName)) {
+                Path oldFile = Paths.get(uploadDir.toString(), oldFileName);
+                Files.delete(oldFile);
+            }
             //Save upload file to directory
             Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
 
@@ -123,28 +181,16 @@ public class NewsAPI extends BaseAPI<NewsDTO, NewsEntity> implements INewsAPI {
     @Override
     @GetMapping("/{id}")
     @JsonView({Views.SearchView.class})
-    public ResponseEntity<?> findById(
-            @PathVariable("id") Long id,
-            NewsDTO dto, NewsEntity entity)
+    public ResponseEntity<?> findById(@PathVariable("id") Long id,
+                                      NewsDTO dto, NewsEntity entity)
             throws ResourceNotFoundException {
         return super.findById(id, dto, entity);
     }
 
-    @Override
-    @GetMapping
-    @JsonView(Views.SearchView.class)
-    public ResponseEntity<?> findAll(
-            @RequestParam(name = "itemPerPage", required = false) String itemPerPage,
-            @RequestParam(name = "currentPage", required = false) String currentPage,
-            NewsDTO dto) {
-        return super.findAll(itemPerPage, currentPage, dto);
-    }
-
     /**
-     *
      * @param imageName full name of image
      * @return image need to view
-     * @throws MalformedURLException if error view image
+     * @throws MalformedURLException     if error view image
      * @throws ResourceNotFoundException if not found image
      */
     @GetMapping("/images/{imageName:.+}")
@@ -153,7 +199,7 @@ public class NewsAPI extends BaseAPI<NewsDTO, NewsEntity> implements INewsAPI {
 
         Path imagePath = Paths.get(directoryUpload, imageName);
         UrlResource urlResource = new UrlResource(imagePath.toUri());
-        if(!urlResource.exists()) {
+        if (!urlResource.exists()) {
             Object[] obj = {imageName};
             throw new ResourceNotFoundException(
                     localeUtils.getMessageByKey(MessageKeys.ITEM_NOT_FOUND, obj));

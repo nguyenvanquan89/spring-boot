@@ -9,6 +9,8 @@ import com.springboot.entity.BaseEntity;
 import com.springboot.repository.BaseRepository;
 import com.springboot.service.IBaseService;
 
+import java.util.List;
+
 public class BaseService<TEntity extends BaseEntity> implements IBaseService<TEntity> {
 
 	@Autowired
@@ -23,7 +25,7 @@ public class BaseService<TEntity extends BaseEntity> implements IBaseService<TEn
 
 	@Transactional
 	@Override
-	public void delete(long[] lstId) {
+	public void delete(List<Long> lstId) {
 		// Delete rows by id
 		for (long id : lstId) {
 			baseRepos.delete(id);

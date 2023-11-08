@@ -47,8 +47,8 @@ public class RoleAPI extends BaseAPI<RoleDTO, RoleEntity> implements IRoleAPI {
     @GetMapping
     @JsonView(Views.SearchView.class)
     public ResponseEntity<?> findAll(
-            @RequestParam(name = "itemPerPage", required = false) String itemPerPage,
-            @RequestParam(name = "currentPage", required = false) String currentPage,
+            @RequestParam(defaultValue = "12") int itemPerPage,
+            @RequestParam(defaultValue = "1") int currentPage,
             RoleDTO dto) {
         return super.findAll(itemPerPage, currentPage, dto);
     }
