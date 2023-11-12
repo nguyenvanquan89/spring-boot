@@ -1,0 +1,50 @@
+<app-header></app-header>
+<div class="container">
+        <div class="d-flex justify-content-center">
+            <ngb-pagination class=" justify-content-center" ngClass=" justify-content-center"
+            [collectionSize]="totalRecord" 
+            (pageChange)="onChangePage($event)"
+            #newsPages1 
+            [(page)]="currentPage" 
+            [pageSize]="itemPerPage"
+            [maxSize]="5"
+            [rotate]="true" 
+            [boundaryLinks]="true">
+            </ngb-pagination>
+        </div>
+        <div class="input-group mb-3">
+            <input class="form-control" type="search" 
+            name="keyword" [(ngModel)]="keyword" 
+            (input)="searchNewsByKeyword()"
+            placeholder="Tìm kiếm tin tức theo tiêu đề hoặc mô tả ngắn" 
+            aria-label="Tìm Kiếm">
+            <button class="btn btn-outline-success" (click)="searchNewsByKeyword()" type="button">Tìm Kiếm</button>
+        </div>
+    <div class="row">
+        <div class="col-lg-4 col-md-6" *ngFor="let item of lstResult">
+            <a class="nav-link" 
+            [routerLink]="['/news-detail',item.category.code, item.title| urlFriendlly,item.category.id, item.id, 'view.html']">
+            <div class="news-item">
+                <img src="{{item.thumbnail}}" title="{{item.title}}" alt="{{item.title}}" class="news-image img-thumbnail" />
+                <h3 class="news-title">{{item.title}}</h3>
+                <div class="news-shortdes" [innerHTML]="item.shortDescription | wordTrim: 20"></div>
+            </div>
+        </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="d-flex justify-content-center">
+            <ngb-pagination 
+            [collectionSize]="totalRecord"
+            (pageChange)="onChangePage($event)"
+            #newsPages2 
+            [(page)]="currentPage" 
+            [pageSize]="itemPerPage"
+            [maxSize]="5"
+            [rotate]="true" 
+            [boundaryLinks]="true">
+            </ngb-pagination>
+        </div>
+    </div>
+</div>
+<app-footer></app-footer>

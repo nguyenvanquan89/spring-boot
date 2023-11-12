@@ -1,0 +1,241 @@
+<section class="vh-100">
+    <div class="container  py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col col-xl-6">
+            <!-- Pills navs -->
+            <ul class="nav nav-pills nav-justified mb-3" id="loginRegisterTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" 
+                    [ngClass]="{'active': isLoginTab}"
+                    (click)="isLoginTab = true"
+                    id="tab-login" data-bs-toggle="pill" data-bs-target="#pills-login"
+                    href="#pills-login" role="tab" aria-controls="pills-login" 
+                    [attr.aria-selected]="isLoginTab">Login</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" 
+                    [ngClass]="{'active': !isLoginTab}"
+                    (click)="isLoginTab = false"
+                    id="tab-register" data-bs-toggle="pill" data-bs-target="#pills-register"
+                    href="#pills-register" role="tab" aria-controls="pills-register"
+                    [attr.aria-selected]="isLoginTab">Register</a>
+                </li>
+            </ul>
+            <!-- Pills navs -->
+
+            <!-- Message register success from server -->
+            <div class="form-group">
+                <div *ngIf="successMsgRegister" class="alert alert-success" role="success">
+                    {{ successMsgRegister }}
+                </div>
+            </div>
+
+            <!-- Pills content -->
+            <div class="tab-content">
+                <div class="tab-pane fade" [ngClass]="{'show active': isLoginTab}"  id="pills-login" role="tabpanel" aria-labelledby="tab-login">
+                    <form [formGroup]="loginForm" (ngSubmit)="loginForm.valid && login()">
+                        <div class="text-center mb-3">
+                            <p>Sign in with:</p>
+                            <button type="button" class="btn btn-link btn-floating mx-1">
+                                <i class="fab fa-facebook-f"></i>
+                            </button>
+
+                            <button type="button" class="btn btn-link btn-floating mx-1">
+                                <i class="fab fa-google"></i>
+                            </button>
+
+                            <button type="button" class="btn btn-link btn-floating mx-1">
+                                <i class="fab fa-twitter"></i>
+                            </button>
+
+                            <button type="button" class="btn btn-link btn-floating mx-1">
+                                <i class="fab fa-github"></i>
+                            </button>
+                        </div>
+                        <p class="text-center">or:</p>
+                        <!-- Email input -->
+                        <div class="form-outline mb-4">
+                            <input type="email" 
+                            id="username" 
+                            formControlName="username" 
+                            [class.is-invalid]="loginForm.controls['username'].invalid && loginForm.controls['username'].touched"
+                            placeholder="Email" class="form-control" />
+                            <div *ngIf="loginForm.controls['username'].invalid && loginForm.controls['username'].touched" class="text-danger">
+                                <div *ngIf="loginForm.controls['username'].errors!['required']">Email is required</div>
+                                <div *ngIf="loginForm.controls['username'].errors!['email']">Email must be email address</div>
+                            </div>
+                        </div>
+
+                        <!-- Password input -->
+                        <div class="form-outline mb-4">
+                            <div class="input-group">
+                                <input type="password" id="loginPassword" 
+                                formControlName="password" 
+                                [class.is-invalid]="loginForm.get('password')!.invalid 
+                                && (loginForm.get('password')!.touched || loginForm.controls['password'].dirty)"
+                                placeholder="Password" class="form-control" />
+                                <span class="input-group-text">
+                                    <a href="#"><i class="fa fa-eye-slash" aria-hidden="true" ></i></a>
+                                </span>
+                            </div>
+                            <div *ngIf="loginForm.controls['password'].invalid 
+                            && (loginForm.controls['password'].touched || loginForm.controls['password'].dirty)" class="text-danger">
+                                <div *ngIf="loginForm.controls['password'].errors!['required']">Password is required</div>
+                                <div *ngIf="loginForm.controls['password'].errors!['minlength']">Password must be at least 6 characters</div>
+                            </div>
+                        </div>
+
+                        <!-- 2 column grid layout -->
+                        <div class="row mb-4">
+                            <div class="col-md-6 d-flex justify-content-center">
+                                <!-- Checkbox -->
+                                <div class="form-check mb-3 mb-md-0">
+                                    <input class="form-check-input" type="checkbox" formControlName="isRemember" id="isRemember" />
+                                    <label class="form-check-label" for="isRemember"> Remember me </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 d-flex justify-content-center">
+                                <!-- Simple link -->
+                                <a href="#!">Forgot password?</a>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-md-6 d-flex justify-content-start">
+                                <!-- Submit button -->
+                                <button type="submit" [disabled]="!loginForm.valid" class="btn btn-primary btn-block mb-4">Sign in</button>
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-end">
+                                <!-- Simple link -->
+                                <a [routerLink]="['/']">Come back to home page</a>
+                            </div>
+                        </div>
+                        <!-- Error from server -->
+                        <div class="form-group">
+                            <div *ngIf="errorMsgLogin" class="alert alert-danger" role="alert">
+                                {{ errorMsgLogin }}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="tab-pane fade" [ngClass]="{'show active': !isLoginTab}" id="pills-register" role="tabpanel" aria-labelledby="tab-register">
+                    <form name="formRegister" #fRegister="ngForm" 
+                    (ngSubmit)="fRegister.form.valid 
+                                && !formRegister.isNotMatchPassword 
+                                && formRegister.isAccept 
+                                && registerUser()">
+                        <div class="text-center mb-3">
+                            <p>Sign up with:</p>
+                            <button type="button" class="btn btn-link btn-floating mx-1">
+                                <i class="fab fa-facebook-f"></i>
+                            </button>
+
+                            <button type="button" class="btn btn-link btn-floating mx-1">
+                                <i class="fab fa-google"></i>
+                            </button>
+
+                            <button type="button" class="btn btn-link btn-floating mx-1">
+                                <i class="fab fa-twitter"></i>
+                            </button>
+
+                            <button type="button" class="btn btn-link btn-floating mx-1">
+                                <i class="fab fa-github"></i>
+                            </button>
+                        </div>
+
+                        <p class="text-center">or:</p>
+
+                        <!-- Full Name input -->
+                        <div class="form-outline mb-4">
+                            <input type="text" id="registerFullName" name="fullName" 
+                            #fullName="ngModel" required [(ngModel)]="formRegister.fullName" 
+                            minlength="10"
+                            placeholder="Full Name" class="form-control" />
+                            <div *ngIf="fullName.errors && fRegister.submitted" class="text-danger">
+                                <div *ngIf="fullName.errors['required']"> Full name is required</div>
+                                <div *ngIf="fullName.errors['minlength']"> Full name  must be at least 10 characters</div>
+                            </div>
+                        </div>
+
+                        <!-- Email input -->
+                        <div class="form-outline mb-4"> 
+                            <input type="email" id="registerEmail" name="username" #rEmail="ngModel" 
+                            email required [(ngModel)]="formRegister.username"
+                            placeholder="Email" class="form-control" />
+                            <div *ngIf="rEmail.errors && fRegister.submitted" class="text-danger">
+                                <div *ngIf="rEmail.errors['required']">Email is required</div>
+                                <div *ngIf="rEmail.errors['email']">Email must be email address</div>
+                            </div>
+                        </div>
+
+                        <!-- Password input -->
+                        <div class="form-outline mb-4">
+                            <div class="input-group">
+                                <input type="password" id="registerPassword" name="password" #rPassword="ngModel" 
+                                required [(ngModel)]="formRegister.password" 
+                                minlength="6"
+                                (input)="checkPasswordMatch()"
+                                placeholder="Password" class="form-control" />
+                                <div class="input-group-text">
+                                    <a href="#"><i class="fa fa-eye-slash" aria-hidden="true"></i></a>
+                                </div>
+                            </div>
+                            <div *ngIf="rPassword.errors && fRegister.submitted" class="text-danger">
+                                <div *ngIf="rPassword.errors['required']">Password is required</div>
+                                <div *ngIf="rPassword.errors['minlength']">Password must be at least 6 characters</div>
+                            </div>
+                        </div>
+
+                        <!-- Repeat Password input -->
+                        <div class="form-outline mb-4">
+                            <div class="input-group">
+                            <input type="password" id="registerRepeatPassword" name="retypePassword" 
+                            #retypePassword="ngModel"
+                            required [(ngModel)]="formRegister.retypePassword"
+                            (input)="checkPasswordMatch()"
+                            placeholder="Repeat password" class="form-control" />
+                            <div class="input-group-text">
+                                <a href="#"><i class="fa fa-eye-slash" aria-hidden="true"></i></a>
+                              </div>
+                            </div>
+                            <div *ngIf="formRegister.isNotMatchPassword && fRegister.submitted" class="text-danger">
+                                <div *ngIf="formRegister.isNotMatchPassword">Retype Password must be match with password</div>
+                            </div>
+                        </div>
+
+                        <!-- Checkbox -->
+                        <div class="form-check d-flex justify-content-center">
+                            <input class="form-check-input me-2" type="checkbox" name="isAccept" #isAccept="ngModel"  
+                            [(ngModel)]="formRegister.isAccept" value="" id="registerCheck"
+                                aria-describedby="registerCheckHelpText" />
+                            <label class="form-check-label" for="registerCheck">
+                                I have read and agree to the terms
+                            </label>
+                        </div>
+                        <div *ngIf="!formRegister.isAccept && fRegister.submitted" class="text-danger">
+                            <div *ngIf="!formRegister.isAccept">You need to read and agree to the terms</div>
+                        </div>
+                        <div class="row mb-4 mt-4">
+                            <div class="col-md-6 d-flex justify-content-start">
+                                <!-- Submit button -->
+                                <button type="submit" class="btn btn-primary btn-block mb-3">Sign up</button>
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-end">
+                                <!-- Simple link -->
+                                <a [routerLink]="['/']">Come back to home page</a>
+                            </div>
+                        </div>
+                        <!--Error from server-->
+                        <div class="form-group">
+                            <div *ngIf="fRegister.submitted && errorMsgRegister" class="alert alert-danger" role="alert">
+                                {{ errorMsgRegister }}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- Pills content -->
+        </div>
+    </div>
+</div>
+</section>

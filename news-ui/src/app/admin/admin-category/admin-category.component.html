@@ -1,0 +1,51 @@
+<div class="mt-5">
+    <div class="row">
+        <div class="col text-center">
+            <h2>Quản lý Categories</h2>
+        </div>
+    </div>
+    <div class="row" *ngIf="msgServer != ''">
+        <div class="col alert alert-danger mt-3" role="alert">
+            {{msgServer}}
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <button class="btn btn-danger" id="btnDelete" *ngIf="hasRoleAdmin || hasRoleEditor" [disabled]="lstSelectId.length==0" (click)="deleteChecked()" >Xoá Dữ Liệu</button> 
+            <a class="btn btn-success" [ngClass]="{'mx-3': hasRoleAdmin || hasRoleEditor}" [routerLink]="['/admin/categories/add', 'view.html']" >Thêm Mới</a>
+        </div>
+    </div>
+    <table class="table table-bordered ">
+        <thead class="">
+            <tr>
+                <th scope="col" *ngIf="hasRoleAdmin || hasRoleEditor"><input type="checkbox"  [(ngModel)]="checkAll" name="checkAllNews" (change)="selectAllItems()" /></th>
+                <th scope="col">Name</th>
+                <th scope="col">Code</th>
+                <th scope="col">Created by</th>
+                <th scope="col">Created date</th>
+                <th scope="col">Modified by</th>
+                <th scope="col">Modified date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of lstResult">
+                <td *ngIf="hasRoleAdmin || hasRoleEditor"><input name="idChecked" type="checkbox" [(ngModel)]="item.isSelected" (change)="selectOneItem()" value="{{item.id}}" /></td>
+                <td class="align-middle"><a [routerLink]="['/admin/categories/edit',item.name | urlFriendlly, item.id, 'view.html']">
+                        {{item.name}}</a></td>
+                <td class="align-middle">{{item.code}}</td>
+                <td class="align-middle">{{item.createdBy}}</td>
+                <td class="align-middle">{{item.createdDate | date : 'dd/MM/yyyy HH:MM:ss'}}</td>
+                <td class="align-middle">{{item.modifiedBy}}</td>
+                <td class="align-middle">{{item.modifiedDate | date : 'dd/MM/yyyy HH:MM:ss'}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="row">
+    <div class="d-flex justify-content-center">
+        <ngb-pagination [collectionSize]="totalRecord" (pageChange)="onChangePage($event)" #newsPages2
+            [(page)]="currentPage" [pageSize]="itemPerPage" [maxSize]="5" [rotate]="true" [boundaryLinks]="true">
+        </ngb-pagination>
+    </div>
+</div>

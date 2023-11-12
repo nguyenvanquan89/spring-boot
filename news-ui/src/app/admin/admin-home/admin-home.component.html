@@ -1,0 +1,53 @@
+<div class="row">
+    <!--Top news last update-->
+    <div class="col-6">
+        <table class="table top-news-modified">
+            <thead>
+                <tr>
+                    <th colspan="2">Top 10 Tin tức mới nhất</th>
+                </tr>
+                <tr>
+                    <th>Tiêu đề</th>
+                    <th>Ngày cập nhật</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of lstNews">
+                    <td>{{item.title}}</td>
+                    <td>{{item.modifiedDate | date : 'dd/MM/yyyy HH:MM:ss'}}</td>
+                </tr>
+                <tr>
+                    <th>Tổng số tin tức : </th>
+                    <th>{{totalNews | number}} tin</th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!--Top comments last update-->
+    <div class="col-6">
+        <table class="table top-comment-modified">
+            <thead>
+                <tr>
+                    <th colspan="3">Top 10 comment mới nhất</th>
+                </tr>
+                <tr>
+                    <th>Nội dung comment</th>
+                    <th>Tiêu đề tin tức</th>
+                    <th>Ngày cập nhật</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of lstComment">
+                    <td>{{item.content | wordTrim:10}}</td>
+                    <td>{{item.news.title | wordTrim: 8}} </td>
+                    <td>{{item.modifiedDate | date : 'dd/MM/yyyy HH:MM:ss'}}</td>
+                </tr>
+                <tr>
+                    <th colspan="2">Tổng số comment : </th>
+                    <th>{{totalComment}}</th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

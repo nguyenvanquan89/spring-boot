@@ -1,0 +1,83 @@
+<div class="row mt-3">
+    <div class="col text-center">
+        <h2>Thêm mới / Sửa tin tức</h2>
+    </div>
+</div>
+<form [formGroup]="newsForm" (ngSubmit)="newsForm.valid && saveNews()">
+    <div class="form-group row mb-3 mt-3">
+        <label for="titleNews" class="col-sm-2 col-form-label">Title</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" 
+            formControlName="title"
+            [class.is-invalid]="newsForm.controls['title'].invalid && newsForm.controls['title'].touched"
+            id="titleNews" value="{{newsDto.title}}" placeholder="Title">
+            <div *ngIf="newsForm.controls['title'].invalid && newsForm.controls['title'].touched" class="text-danger">
+                <div *ngIf="newsForm.controls['title'].errors!['required']">Title is required</div>
+                <div *ngIf="newsForm.controls['title'].errors!['minlength']">Title  must be at least 10 characters</div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group row mb-3">
+        <label for="categoryOfNews" class="col-sm-2 col-form-label">Category</label>
+        <div class="col-sm-10">
+            <select class="form-control" formControlName="categoryId" id="categoryOfNews">
+                <option *ngFor="let cat of categories" [value]="cat.id" >{{cat.name}}</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row mb-3">
+        <label for="thumbnailNews" class="col-sm-2 col-form-label">Thumbnail</label>
+        <div class="col-sm-10">
+            <input type="file" (change)="onFileSelected($event)" class="form-control" id="thumbnailNews" placeholder="Thumbnail">
+            <input type="hidden" value="{{newsDto.thumbnail}}"/>
+        </div>
+    </div>
+    <div class="form-group row mb-3">
+        <label class="col-sm-2 col-form-label">Short Description</label>
+        <div class="col-sm-10">
+            <ckeditor
+            formControlName="shortDescription"
+            id="shortDescriptionNews"
+            [data]="newsDto.shortDescription"
+            [class.is-invalid]="newsForm.controls['shortDescription'].invalid && newsForm.controls['shortDescription'].touched"
+             [editor]="Editor" 
+             [editorWatchdogConfig]=""
+             [config]="editorConfig">
+            </ckeditor>
+            <div *ngIf="newsForm.controls['shortDescription'].invalid && newsForm.controls['shortDescription'].touched" class="text-danger">
+                <div *ngIf="newsForm.controls['shortDescription'].errors!['required']">Short Description is required</div>
+                <div *ngIf="newsForm.controls['shortDescription'].errors!['minlength']">Short Description  must be at least 100 characters</div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group row mb-3">
+        <label class="col-sm-2 col-form-label">CKeditor</label>
+        <div class="col-sm-10">
+            <ckeditor
+            formControlName="content"
+            id="contentNews"
+            [data]="newsDto.content"
+            [class.is-invalid]="newsForm.controls['content'].invalid && newsForm.controls['content'].touched"
+             [editor]="Editor" [config]="editorConfig" >
+            </ckeditor>
+             <div *ngIf="newsForm.controls['content'].invalid && newsForm.controls['content'].touched" class="text-danger">
+                <div *ngIf="newsForm.controls['content'].errors!['required']">Content is required</div>
+                <div *ngIf="newsForm.controls['content'].errors!['minlength']">Content  must be at least 100 characters</div>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" [disabled]="!newsForm.valid" class="btn btn-primary">Lưu Dữ Liệu</button>
+    <!-- Error from server -->
+    <div class="form-group">
+        <div *ngIf="msgSuccess" class="alert alert-success mt-3" role="alert">
+            {{ msgSuccess }}
+        </div>
+    </div>
+    <!-- Error from server -->
+    <div class="form-group">
+        <div *ngIf="msgErrorServer" class="alert alert-danger mt-3" role="alert">
+            {{ msgErrorServer }}
+        </div>
+    </div>
+</form>

@@ -1,3 +1,6 @@
 #target news project
 news/target
 news/uploads
+
+#Ckeditor5 node_modules
+news-ui/ckeditor5_custom/node_modules

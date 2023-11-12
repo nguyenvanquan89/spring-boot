@@ -1,0 +1,19 @@
+.news-item {
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+ngb-pagination {
+    padding-top: 1em;
+}
+.news-image {
+
+}
+.news-title {
+
+}
+.news-shortdes {
+
+}
