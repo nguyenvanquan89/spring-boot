@@ -17,6 +17,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -33,7 +34,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/news")
@@ -95,8 +99,8 @@ public class NewsAPI extends BaseAPI<NewsDTO, NewsEntity> implements INewsAPI {
         return new ResponseEntity<>(body, HttpStatus.OK);
     }
 
-   /* @PutMapping(value = "/upload")
-    @JsonView(Views.UpdateView.class)
+    /*@PostMapping(value = "/images/upload")
+    @JsonView({Views.UpdateView.class, Views.AddNewView.class})
     @PreAuthorize("hasAnyRole('ADMIN', 'AUTHOR', 'EDITOR')")
     public ResponseEntity<?> updateNewsUploadImage(@Valid @RequestBody NewsDTO dto,
                                                    MultipartHttpServletRequest request,
@@ -121,11 +125,17 @@ public class NewsAPI extends BaseAPI<NewsDTO, NewsEntity> implements INewsAPI {
     public ResponseEntity<?> searchNews(@RequestParam(defaultValue = "12") int itemPerPage,
                                         @RequestParam(defaultValue = "1") int currentPage,
                                         @RequestParam(defaultValue = "0") long categoryId,
+                                        @RequestParam(required = false, defaultValue = "DESC") String order,
+                                        @RequestParam(required = false, defaultValue = "modifiedDate") String orderColumn,
                                         @RequestParam(defaultValue = "") String keyword) {
-        // find all in database
-        Pageable pageable = new PageRequest(currentPage - 1, itemPerPage);
-        Page<NewsEntity> pageEntity = newsService.searchNews(categoryId, keyword, pageable);
 
+        Sort sort = new Sort(Sort.Direction.ASC,orderColumn);
+        if("desc".equalsIgnoreCase(order)) {
+            sort = new Sort(Sort.Direction.DESC,orderColumn);
+        }
+        // find all in database
+        Pageable pageable = new PageRequest(currentPage - 1, itemPerPage, sort);
+        Page<NewsEntity> pageEntity = newsService.searchNews(categoryId, keyword, pageable);
         List<NewsDTO> lstDto = mappingUtils.mapList(pageEntity.getContent(), NewsDTO.class);
 
         Map<String, Object> body = new HashMap<>();
@@ -205,6 +215,22 @@ public class NewsAPI extends BaseAPI<NewsDTO, NewsEntity> implements INewsAPI {
                     localeUtils.getMessageByKey(MessageKeys.ITEM_NOT_FOUND, obj));
         }
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(urlResource);
+    }
+
+    @PostMapping(value = "/images")
+    @PreAuthorize("hasAnyRole('ADMIN', 'AUTHOR', 'EDITOR')")
+    public ResponseEntity<?> uploadImage(
+                                        @RequestPart(value = "upload") MultipartFile file,
+                                        HttpServletRequest request
+                                        )throws IOException {
+
+        String filename = storeFile(file, "");
+        StringBuffer url = request.getRequestURL();
+        url.append("/");
+        url.append(filename);
+        Map<String, Object> body = new HashMap<>();
+        body.put("url", url);
+        return new ResponseEntity<>(body, HttpStatus.OK);
     }
 
     /*@PostMapping("/generateFakerNewsData")

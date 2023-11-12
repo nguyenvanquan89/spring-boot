@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -49,6 +50,7 @@ public class BaseAPI<TDto extends BaseDTO<TDto>, TEntity extends BaseEntity>
             @PathVariable("id") Long id,
             TDto dto, TEntity entity)
             throws ResourceNotFoundException {
+
         logger.info(String.format("find id=%d", id));
         entity = baseService.findOneById(id);
         if (entity == null) {
@@ -67,6 +69,7 @@ public class BaseAPI<TDto extends BaseDTO<TDto>, TEntity extends BaseEntity>
     @PreAuthorize("hasAnyRole('ADMIN', 'AUTHOR', 'EDITOR')")
     public ResponseEntity<?> create(@Valid @RequestBody TDto dto,
                                     TEntity entity) throws Exception{
+
         mappingUtils.mapFromDTO(dto, entity);
         entity = baseService.save(entity);
         mappingUtils.map(entity, dto);
@@ -113,10 +116,16 @@ public class BaseAPI<TDto extends BaseDTO<TDto>, TEntity extends BaseEntity>
     public ResponseEntity<?> findAll(
             @RequestParam(defaultValue = "12") int itemPerPage,
             @RequestParam(defaultValue = "1") int currentPage,
+            @RequestParam(required = false ,defaultValue = "DESC") String order,
+            @RequestParam(required = false ,defaultValue = "modifiedDate") String orderColumn,
             TDto dto) {
 
+        Sort sort = new Sort(Sort.Direction.ASC,orderColumn);
+        if("desc".equalsIgnoreCase(order)) {
+            sort = new Sort(Sort.Direction.DESC,orderColumn);
+        }
         // find all in database
-        Pageable pageable = new PageRequest(currentPage - 1, itemPerPage);
+        Pageable pageable = new PageRequest(currentPage - 1, itemPerPage, sort);
         Page<TEntity> pageEntity = baseService.findAllByPageable(pageable);
 
         // Convert Entity to DTO

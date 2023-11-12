@@ -49,8 +49,10 @@ public class RoleAPI extends BaseAPI<RoleDTO, RoleEntity> implements IRoleAPI {
     public ResponseEntity<?> findAll(
             @RequestParam(defaultValue = "12") int itemPerPage,
             @RequestParam(defaultValue = "1") int currentPage,
+            @RequestParam(required = false ,defaultValue = "DESC") String order,
+            @RequestParam(required = false ,defaultValue = "modifiedDate") String orderColumn,
             RoleDTO dto) {
-        return super.findAll(itemPerPage, currentPage, dto);
+        return super.findAll(itemPerPage, currentPage, order, orderColumn, dto);
     }
 
 }

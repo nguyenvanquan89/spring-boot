@@ -21,5 +21,7 @@ public interface INewsAPI extends IBaseAPI<NewsDTO, NewsEntity> {
     ResponseEntity<?> searchNews(int itemPerPage,
                                  int currentPage,
                                  long categoryId,
+                                 String order,
+                                 String orderColumn,
                                  String keyword);
 }

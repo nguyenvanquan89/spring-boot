@@ -36,6 +36,12 @@ public class UserDTO extends BaseDTO<UserDTO> {
     @JsonView(value = {Views.CommonView.class})
     private int status;
 
+    @JsonView(value = {Views.AddNewView.class, Views.UpdateView.class, Views.SearchView.class})
+    private String facebookUserId;
+
+    @JsonView(value = {Views.AddNewView.class, Views.UpdateView.class, Views.SearchView.class})
+    private String googleUserId;
+
     @JsonView(value = {Views.AddNewView.class, Views.UpdateView.class, Views.SearchView.class, Views.LoginView.class})
     @JsonIgnoreProperties("users")
     private List<RoleDTO> roles;
@@ -44,11 +50,7 @@ public class UserDTO extends BaseDTO<UserDTO> {
     @JsonIgnoreProperties("user")
     private List<CommentDTO> comments;
 
-    @JsonView(value = {Views.AddNewView.class, Views.UpdateView.class, Views.SearchView.class})
-    private String facebookUserId;
 
-    @JsonView(value = {Views.AddNewView.class, Views.UpdateView.class, Views.SearchView.class})
-    private String googleUserId;
 
     public String getUsername() {
         return username;

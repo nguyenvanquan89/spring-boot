@@ -32,13 +32,13 @@ public class UserEntity extends BaseEntity {
     private List<RoleEntity> roles;
 
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
     private List<CommentEntity> comments;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
     private List<SocialAccountEntity> socialAccounts;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
     private List<TokenEntity> tokens;
 
 

@@ -14,6 +14,8 @@ public interface IBaseAPI<TDto extends BaseDTO<TDto>, TEntity extends BaseEntity
 
     ResponseEntity<?> findAll(int itemPerPage,
                               int currentPage,
+                              String order,
+                              String orderColumn,
                               TDto dto);
 
     ResponseEntity<?> create(TDto dto,

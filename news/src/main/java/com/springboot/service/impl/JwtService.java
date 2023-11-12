@@ -6,7 +6,7 @@ import com.springboot.dto.UserDTO;
 import com.springboot.entity.UserEntity;
 import com.springboot.service.IUserService;
 import com.springboot.util.JwtUtil;
-import org.modelmapper.ModelMapper;
+import com.springboot.util.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,7 +35,7 @@ public class JwtService implements UserDetailsService {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private ModelMapper modelMapper;
+    private MappingUtils mappingUtils;
 
     /**
      * Load user when authenticate and access via json web token
@@ -66,7 +66,7 @@ public class JwtService implements UserDetailsService {
 
         UserEntity user = userService.findOneByUsername(username);
         UserDTO userDto = new UserDTO();
-        modelMapper.map(user, userDto);
+        mappingUtils.map(user, userDto);
 
         String newGeneratedToken = jwtUtil.generateToken(userDto);
 

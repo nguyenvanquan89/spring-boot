@@ -6,10 +6,10 @@ import javax.persistence.*;
 @Table(name = "Comments")
 public class CommentEntity extends BaseEntity {
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
     private UserEntity user;
 
