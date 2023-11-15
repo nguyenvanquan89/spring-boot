@@ -40,16 +40,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 									HttpServletResponse response,
 									FilterChain filterChain)
 			throws ServletException, IOException {
-		final String requestTokenHeader = request.getHeader("Authorization");
+		final String requestTokenHeader = request.getHeader("Authorization"); // TODO should create constant for Authorization
 
 		String username = null;
 		String jwtToken = null;
 
-		if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
+		if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) { // TODO should create constant for Bearer
 			jwtToken = requestTokenHeader.substring(7);
 			try {
 				username = jwtUtil.getUsernameFromToken(jwtToken);
 			} catch (IllegalArgumentException e) {
+				// TODO write log instead of print to console
 				System.out.println(messageSource.getMessage(MessageKeys.JWT_UNABLE, null, request.getLocale()));
 			} catch (ExpiredJwtException e) {
 				System.out.println(messageSource.getMessage(MessageKeys.JWT_EXPIRED, null, request.getLocale()));

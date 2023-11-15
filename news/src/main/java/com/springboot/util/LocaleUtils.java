@@ -12,12 +12,10 @@ public class LocaleUtils {
     @Autowired
     private MessageSource messageSource;
 
-
     public String getMessageByKey(String key, Object[] obj) {
         HttpServletRequest request = getCurrentRequest();
         return messageSource.getMessage(key, obj, request.getLocale());
     }
-
 
     /**
      * get current request
@@ -26,6 +24,5 @@ public class LocaleUtils {
     public HttpServletRequest getCurrentRequest() {
         return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
     }
-
 
 }

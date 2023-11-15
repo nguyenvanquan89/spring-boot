@@ -27,11 +27,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BaseAPI<TDto extends BaseDTO<TDto>, TEntity extends BaseEntity>
-        implements IBaseAPI<TDto, TEntity> {
+public class BaseAPI<D extends BaseDTO<D>, E extends BaseEntity>
+        implements IBaseAPI<D, E> {
 
     @Autowired
-    private IBaseService<TEntity> baseService;
+    private IBaseService<E> baseService;
 
     @Autowired
     private LocaleUtils localeUtils;
@@ -48,7 +48,7 @@ public class BaseAPI<TDto extends BaseDTO<TDto>, TEntity extends BaseEntity>
     @PreAuthorize("hasAnyRole('ADMIN', 'AUTHOR', 'EDITOR')")
     public ResponseEntity<?> findById(
             @PathVariable("id") Long id,
-            TDto dto, TEntity entity)
+            D dto, E entity)
             throws ResourceNotFoundException {
 
         logger.info(String.format("find id=%d", id));
@@ -67,8 +67,8 @@ public class BaseAPI<TDto extends BaseDTO<TDto>, TEntity extends BaseEntity>
     @PostMapping
     @JsonView(Views.AddNewView.class)
     @PreAuthorize("hasAnyRole('ADMIN', 'AUTHOR', 'EDITOR')")
-    public ResponseEntity<?> create(@Valid @RequestBody TDto dto,
-                                    TEntity entity) throws Exception{
+    public ResponseEntity<?> create(@Valid @RequestBody D dto,
+                                    E entity) throws Exception{
 
         mappingUtils.mapFromDTO(dto, entity);
         entity = baseService.save(entity);
@@ -84,8 +84,8 @@ public class BaseAPI<TDto extends BaseDTO<TDto>, TEntity extends BaseEntity>
     @PutMapping
     @JsonView(Views.UpdateView.class)
     @PreAuthorize("hasAnyRole('ADMIN', 'AUTHOR', 'EDITOR')")
-    public ResponseEntity<?> update(@Valid @RequestBody TDto dto,
-                                    TEntity entity) {
+    public ResponseEntity<?> update(@Valid @RequestBody D dto,
+                                    E entity) {
         mappingUtils.mapFromDTO(dto, entity);
         entity = baseService.save(entity);
         mappingUtils.map(entity, dto);
@@ -118,7 +118,7 @@ public class BaseAPI<TDto extends BaseDTO<TDto>, TEntity extends BaseEntity>
             @RequestParam(defaultValue = "1") int currentPage,
             @RequestParam(required = false ,defaultValue = "DESC") String order,
             @RequestParam(required = false ,defaultValue = "modifiedDate") String orderColumn,
-            TDto dto) {
+            D dto) {
 
         Sort sort = new Sort(Sort.Direction.ASC,orderColumn);
         if("desc".equalsIgnoreCase(order)) {
@@ -126,10 +126,10 @@ public class BaseAPI<TDto extends BaseDTO<TDto>, TEntity extends BaseEntity>
         }
         // find all in database
         Pageable pageable = new PageRequest(currentPage - 1, itemPerPage, sort);
-        Page<TEntity> pageEntity = baseService.findAllByPageable(pageable);
+        Page<E> pageEntity = baseService.findAllByPageable(pageable);
 
         // Convert Entity to DTO
-        List<TDto> lstDto = (List<TDto>) mappingUtils.mapList(pageEntity.getContent(), dto.getClass());
+        List<D> lstDto = (List<D>) mappingUtils.mapList(pageEntity.getContent(), dto.getClass());
 
         Map<String, Object> body = new HashMap<>();
         body.put("totalRecord", pageEntity.getTotalElements());

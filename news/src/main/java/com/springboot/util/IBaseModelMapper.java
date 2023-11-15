@@ -1,6 +1,5 @@
 package com.springboot.util;
 
-import com.springboot.util.MappingUtils;
 import org.modelmapper.ModelMapper;
 
 public interface IBaseModelMapper {

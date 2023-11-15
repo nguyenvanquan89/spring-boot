@@ -3,6 +3,7 @@ package com.springboot.exceptions;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.springboot.api.response.ErrorResponse;
 import com.springboot.util.LocaleUtils;
 import com.springboot.util.MessageKeys;
 import org.slf4j.Logger;
@@ -32,36 +33,30 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Autowired
     private LocaleUtils localeUtils;
 
-    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     /**
      * Validate input data and then show errors
      */
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+    protected ResponseEntity handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", new Date());
-        body.put("status", status.value());
-
         List<String> errors = ex.getBindingResult().getAllErrors().stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());
 
-        body.put("message", errors);
-
-        logger.error(String.format("Error message: %s", errors));
-
+        LOGGER.error("Error message: {}", errors);
+        ErrorResponse body = new ErrorResponse().setStatus(status.value())
+                .setTimestamp(new Date())
+                .setMessages(errors);
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<?> resourceNotFoundException(
+    public ResponseEntity<ErrorResponse> resourceNotFoundException(
             ResourceNotFoundException ex, WebRequest request) {
-        Map<String, Object> body = new HashMap<>();
-
-        body.put("message", ex.getMessage());
-        logger.error(String.format("Error message: %s", ex.getMessage()));
+        LOGGER.error("Error message: {}", ex.getMessage());
+        ErrorResponse body = new ErrorResponse().setMessage(ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
@@ -71,7 +66,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         Map<String, Object> body = new HashMap<>();
 
         body.put("message", ex.getMessage());
-        logger.error(String.format("Error message: %s", ex.getMessage()));
+        LOGGER.error("Error message: {}", ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
@@ -84,18 +79,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         Map<String, Object> body = new HashMap<>();
         body.put("message", errors);
-        logger.error(String.format("Error message: %s", errors));
+        LOGGER.error("Error message: {}", errors);
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({AccessDeniedException.class})
-    public ResponseEntity<?> handleAccessDeniedException(Exception ex, WebRequest request) {
+    public ResponseEntity handleAccessDeniedException(Exception ex, WebRequest request) {
         Map<String, Object> body = new HashMap<>();
 
         String msg = localeUtils.getMessageByKey(MessageKeys.ACCESS_DENIED, null);
         body.put("message", msg);
         body.put("status", HttpStatus.FORBIDDEN);
-        logger.error(String.format("Error message: %s", msg));
+        LOGGER.error("Error message: {}", msg);
         return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.FORBIDDEN);
     }
 
@@ -110,7 +105,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleRuntimeException(RuntimeException ex, WebRequest request) {
         Map<String, Object> body = new HashMap<>();
 
-        String msg = "";
+        String msg;
         if (ex instanceof BadCredentialsException) {//error authenticate
             msg = localeUtils.getMessageByKey(MessageKeys.JWT_USERNAME_PASSWORD_WRONG, null);
         } else if (ex instanceof DisabledException) {
@@ -124,8 +119,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         body.put("errorDetail", ex.getMessage());
         body.put("message", msg);
         body.put("status", HttpStatus.BAD_REQUEST);
-        logger.error(String.format("Error message: %s", msg));
-        logger.error(String.format("Error detail message: %s", ex.getMessage()));
+        LOGGER.error("Error message: {}", msg);
+        LOGGER.error("Error detail message: {}", ex.getMessage());
         return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
@@ -148,7 +143,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         bodyErrs.put("errorDetail", ex.getMessage());
         bodyErrs.put("message", msg);
         bodyErrs.put("status", status);
-        logger.error(String.format("Error message: %s", msg));
+        LOGGER.error("Error message: {}", msg);
         return new ResponseEntity<>(bodyErrs, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 

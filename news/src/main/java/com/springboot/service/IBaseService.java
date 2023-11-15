@@ -7,10 +7,10 @@ import com.springboot.entity.BaseEntity;
 
 import java.util.List;
 
-public interface IBaseService<TEntity extends BaseEntity> {
+public interface IBaseService<T extends BaseEntity> {
 	
-	Page<TEntity> findAllByPageable(Pageable pageRequest);
-	TEntity findOneById(Long id);
-	TEntity save(TEntity entity);
+	Page<T> findAllByPageable(Pageable pageRequest);
+	T findOneById(Long id);
+	T save(T entity);
 	void delete(List<Long> lstId);
 }

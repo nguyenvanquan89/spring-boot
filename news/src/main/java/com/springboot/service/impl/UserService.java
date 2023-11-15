@@ -1,20 +1,17 @@
 package com.springboot.service.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.stream.Collectors;
-
+import com.springboot.entity.RoleEntity;
+import com.springboot.entity.UserEntity;
+import com.springboot.repository.UserRepository;
+import com.springboot.service.IUserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.springboot.entity.RoleEntity;
-import com.springboot.entity.UserEntity;
-import com.springboot.repository.UserRepository;
-import com.springboot.service.IUserService;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService extends BaseService<UserEntity> implements IUserService {
@@ -44,17 +41,24 @@ public class UserService extends BaseService<UserEntity> implements IUserService
 			RoleEntity roleEntity = roleService.findOneByCode(defautRole);
 			entity.setRoles(Collections.singletonList(roleEntity));
 		}
+
 		modelMapper.map(entity, newUserEntity);
 		newUserEntity.getRoles().clear();
 		newUserEntity.getRoles().addAll(entity
 				.getRoles()
 				.stream()
-				.map(r -> {
-					RoleEntity role = roleService.findOneById(r.getId());
-					if(role != null) {role.getUsers().add(newUserEntity);}
-					return role;
-				}).collect(Collectors.toList()));
+				.map(r -> mapRole(newUserEntity, r))
+				.collect(Collectors.toList()));
 		return userRepo.save(newUserEntity);
+	}
+
+	private RoleEntity mapRole(UserEntity newUserEntity, RoleEntity r) {
+		RoleEntity role = roleService.findOneById(r.getId());
+		if(role != null) {
+			role.getUsers().add(newUserEntity);
+		}
+
+		return role;
 	}
 
 	@Override
@@ -66,6 +70,5 @@ public class UserService extends BaseService<UserEntity> implements IUserService
 	public UserEntity findOneByUsername(String username) {
 		return userRepo.findOneByUsername(username);
 	}
-
 
 }

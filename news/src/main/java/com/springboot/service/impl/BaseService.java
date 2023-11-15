@@ -11,14 +11,14 @@ import com.springboot.service.IBaseService;
 
 import java.util.List;
 
-public class BaseService<TEntity extends BaseEntity> implements IBaseService<TEntity> {
+public class BaseService<T extends BaseEntity> implements IBaseService<T> {
 
 	@Autowired
-	private BaseRepository<TEntity> baseRepos;
+	private BaseRepository<T> baseRepos;
 	
 	@Transactional
 	@Override
-	public TEntity save(TEntity entity) {
+	public T save(T entity) {
 		entity = baseRepos.save(entity);
 		return entity;
 	}
@@ -33,12 +33,12 @@ public class BaseService<TEntity extends BaseEntity> implements IBaseService<TEn
 	}
 	
 	@Override
-	public Page<TEntity> findAllByPageable(Pageable pageRequest) {
+	public Page<T> findAllByPageable(Pageable pageRequest) {
 		return baseRepos.findAll(pageRequest);
 	}
 
 	@Override
-	public TEntity findOneById(Long id) {
+	public T findOneById(Long id) {
 		return baseRepos.findOne(id);
 	}
 

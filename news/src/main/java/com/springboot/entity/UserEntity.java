@@ -122,5 +122,4 @@ public class UserEntity extends BaseEntity {
         this.tokens = tokens;
     }
 
-
 }
