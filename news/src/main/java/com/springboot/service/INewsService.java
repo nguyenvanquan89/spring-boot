@@ -1,6 +1,5 @@
 package com.springboot.service;
 
-import com.springboot.entity.CategoryEntity;
 import com.springboot.entity.NewsEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

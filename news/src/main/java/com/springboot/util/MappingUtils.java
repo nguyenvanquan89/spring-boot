@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 public class MappingUtils {
 
     /**
@@ -48,7 +47,7 @@ public class MappingUtils {
             return instance.updateModelMapper(mapper, this);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException
                  | InvocationTargetException e) {
-            List<ErrorMessage> errorMessages = new ArrayList<>();
+            List<ErrorMessage> errorMessages = new ArrayList<>(1);
             errorMessages.add(new ErrorMessage(dto.getName()));
             throw new MappingException(errorMessages);
         }

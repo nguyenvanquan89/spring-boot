@@ -15,7 +15,6 @@ import java.util.List;
 
 public class CategoryDTO extends BaseDTO<CategoryDTO> {
 
-
     @NotBlank(message = "{categorydto.name.notblank}")
     @JsonView(value = {Views.AddNewView.class, Views.UpdateView.class, Views.SearchView.class})
     private String name;
@@ -63,14 +62,23 @@ public class CategoryDTO extends BaseDTO<CategoryDTO> {
         this.totalNews = totalNews;
     }
 
-    //Mapper object category dto
+    /**
+     * Mapper object category dto
+     * @param mapper ModelMapper
+     * @param utils MappingUtils
+     * @return
+     */
     @Override
     public ModelMapper updateModelMapper(ModelMapper mapper, MappingUtils utils) {
         mapper.addMappings(categoryMap(utils));
         return mapper;
     }
 
-    //model map deep to get all news of category
+    /**
+     * model map deep to get all news of category
+     * @param utils MappingUtils
+     * @return
+     */
     public PropertyMap<CategoryEntity, CategoryDTO> categoryMap(MappingUtils utils) {
         return new PropertyMap<CategoryEntity, CategoryDTO>() {
             @Override

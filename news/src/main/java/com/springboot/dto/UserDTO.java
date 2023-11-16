@@ -16,7 +16,6 @@ import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class UserDTO extends BaseDTO<UserDTO> {
 
     @NotNull(message = "{userdto.password.notblank}")

@@ -1,5 +1,6 @@
 package com.springboot.util;
 
+import com.springboot.dto.RoleDTO;
 import com.springboot.dto.UserDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtil {
@@ -35,12 +37,12 @@ public class JwtUtil {
 
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
+    public boolean validateToken(String token, UserDetails userDetails) {
         final String userName = getUsernameFromToken(token);
         return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    private Boolean isTokenExpired(String token) {
+    private boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
@@ -56,17 +58,15 @@ public class JwtUtil {
      * @return
      */
     public String generateToken(UserDTO userDto) {
-
-        Map<String, Object> claims = new HashMap<>();
-        List<String> roleCodes = new ArrayList<>();
-        userDto.getRoles().forEach(roleDto -> roleCodes.add(roleDto.getCode()));
+        Map<String, Object> claims = new HashMap<>(2, 1);
+        List<String> roleCodes = userDto.getRoles().stream().map(RoleDTO::getCode).collect(Collectors.toList());
         claims.put("roleCodes", roleCodes);
         claims.put("userId", userDto.getId());
 
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userDto.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + TOKEN_VALIDITY * 1000))
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
                 .compact();

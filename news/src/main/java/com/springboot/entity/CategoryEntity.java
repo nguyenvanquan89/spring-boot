@@ -39,5 +39,4 @@ public class CategoryEntity extends BaseEntity {
         this.news = news;
     }
 
-
 }

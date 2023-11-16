@@ -64,5 +64,4 @@ public class SocialAccountEntity extends BaseEntity {
         this.user = user;
     }
 
-
 }

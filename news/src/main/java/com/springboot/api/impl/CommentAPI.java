@@ -40,8 +40,8 @@ public class CommentAPI extends BaseAPI<CommentDTO, CommentEntity> implements IC
             commentEntity.setUser(userEntity);
             try {
                 commentService.save(commentEntity);
-            } catch (Exception ex) {
-                continue;
+            } catch (Exception ignored) {
+                // TODO should write log
             }
         }
         return ResponseEntity.ok("Generate Faker News successfully");
