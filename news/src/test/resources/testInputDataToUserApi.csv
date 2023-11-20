@@ -1,0 +1,12 @@
+Input data,Field Name, Expect Message
+,username,{userdto.username.notblank}
+"",username,{userdto.username.notblank}
+user,username,{userdto.username.notblank}
+,password,{userdto.password.notnull}
+" ",password,{userdto.password.notblank}
+1,password,{userdto.password.notblank}
+12345,password,{userdto.password.notblank}
+12345678901234567890123456789012345678901,password,{userdto.password.notblank}
+,fullName,{userdto.fullname.notblank}
+"",fullName,{userdto.fullname.notblank}
+" ",fullName,{userdto.fullname.notblank}

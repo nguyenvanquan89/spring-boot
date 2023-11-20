@@ -17,33 +17,33 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/comments")
 public class CommentAPI extends BaseAPI<CommentDTO, CommentEntity> implements ICommentAPI {
 
-    @Autowired
-    private ICommentService commentService;
+  @Autowired
+  private ICommentService commentService;
 
-    @PostMapping("/generateFakerCommentData")
-    public ResponseEntity<?> generateFakerCommentData() {
-        Faker faker = new Faker();
-        CommentEntity commentEntity;
-        NewsEntity newsEntity;
-        UserEntity userEntity;
+  @PostMapping("/generateFakerCommentData")
+  public ResponseEntity<String> generateFakerCommentData() {
+    Faker faker = new Faker();
+    CommentEntity commentEntity;
+    NewsEntity newsEntity;
+    UserEntity userEntity;
 
-        for (int i = 0; i < 5000; i++) {
-            commentEntity = new CommentEntity();
-            newsEntity = new NewsEntity();
-            userEntity = new UserEntity();
+    for (int i = 0; i < 5000; i++) {
+      commentEntity = new CommentEntity();
+      newsEntity = new NewsEntity();
+      userEntity = new UserEntity();
 
-            newsEntity.setId((long)faker.number().numberBetween(34599,39500));
-            userEntity.setId((long)faker.random().nextInt(1,10));
+      newsEntity.setId((long) faker.number().numberBetween(34599, 39500));
+      userEntity.setId((long) faker.random().nextInt(1, 10));
 
-            commentEntity.setContent(faker.lorem().paragraph());
-            commentEntity.setNews(newsEntity);
-            commentEntity.setUser(userEntity);
-            try {
-                commentService.save(commentEntity);
-            } catch (Exception ignored) {
-                // TODO should write log
-            }
-        }
-        return ResponseEntity.ok("Generate Faker News successfully");
+      commentEntity.setContent(faker.lorem().paragraph());
+      commentEntity.setNews(newsEntity);
+      commentEntity.setUser(userEntity);
+      try {
+        commentService.save(commentEntity);
+      } catch (Exception ignored) {
+        // TODO should write log
+      }
     }
+    return ResponseEntity.ok("Generate Faker News successfully");
+  }
 }
