@@ -4,71 +4,71 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import java.util.Date;
 
-public class TokenDTO extends BaseDTO<TokenDTO> {
+public class TokenDTO extends BaseDTO {
 
-    @JsonView(value = {Views.CommonView.class})
-    private String token;
+  @JsonView(value = {Views.CommonView.class})
+  private String token;
 
-    @JsonView(value = {Views.CommonView.class})
-    private String tokenType;
+  @JsonView(value = {Views.CommonView.class})
+  private String tokenType;
 
-    @JsonView(value = {Views.CommonView.class})
-    private Date expirationDate;
+  @JsonView(value = {Views.CommonView.class})
+  private Date expirationDate;
 
-    @JsonView(value = {Views.CommonView.class})
-    private int revoked;
+  @JsonView(value = {Views.CommonView.class})
+  private int revoked;
 
-    @JsonView(value = {Views.CommonView.class})
-    private int expired;
+  @JsonView(value = {Views.CommonView.class})
+  private int expired;
 
-    @JsonView(value = {Views.CommonView.class})
-    private UserDTO user;
+  @JsonView(value = {Views.CommonView.class})
+  private UserDTO user;
 
-    public String getToken() {
-        return token;
-    }
+  public String getToken() {
+    return token;
+  }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
+  public void setToken(String token) {
+    this.token = token;
+  }
 
-    public String getTokenType() {
-        return tokenType;
-    }
+  public String getTokenType() {
+    return tokenType;
+  }
 
-    public void setTokenType(String tokenType) {
-        this.tokenType = tokenType;
-    }
+  public void setTokenType(String tokenType) {
+    this.tokenType = tokenType;
+  }
 
-    public Date getExpirationDate() {
-        return expirationDate;
-    }
+  public Date getExpirationDate() {
+    return expirationDate;
+  }
 
-    public void setExpirationDate(Date expirationDate) {
-        this.expirationDate = expirationDate;
-    }
+  public void setExpirationDate(Date expirationDate) {
+    this.expirationDate = expirationDate;
+  }
 
-    public int getRevoked() {
-        return revoked;
-    }
+  public int getRevoked() {
+    return revoked;
+  }
 
-    public void setRevoked(int revoked) {
-        this.revoked = revoked;
-    }
+  public void setRevoked(int revoked) {
+    this.revoked = revoked;
+  }
 
-    public int getExpired() {
-        return expired;
-    }
+  public int getExpired() {
+    return expired;
+  }
 
-    public void setExpired(int expired) {
-        this.expired = expired;
-    }
+  public void setExpired(int expired) {
+    this.expired = expired;
+  }
 
-    public UserDTO getUser() {
-        return user;
-    }
+  public UserDTO getUser() {
+    return user;
+  }
 
-    public void setUser(UserDTO user) {
-        this.user = user;
-    }
+  public void setUser(UserDTO user) {
+    this.user = user;
+  }
 }

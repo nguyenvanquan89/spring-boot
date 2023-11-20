@@ -2,6 +2,7 @@ package com.springboot.api.impl;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.springboot.dto.JwtRequest;
+import com.springboot.dto.JwtResponse;
 import com.springboot.dto.Views;
 import com.springboot.service.impl.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +18,20 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api")
 public class AuthenticateAPI {
-    @Autowired
-    private JwtService jwtService;
 
-    @PostMapping({"/authenticate"})
-    @JsonView(Views.LoginView.class)
-    public ResponseEntity<?> authenticateAndCreateJwtToken(
-            @Valid @RequestBody JwtRequest jwtRequest)
-            throws Exception {
-        return new ResponseEntity<>(jwtService.authenticateAndCreateJwt(jwtRequest), HttpStatus.OK);
-    }
+  private final JwtService jwtService;
+
+  @Autowired
+  public AuthenticateAPI(JwtService jwtService) {
+    this.jwtService = jwtService;
+  }
+
+  @PostMapping({"/authenticate"})
+  @JsonView(Views.LoginView.class)
+  public ResponseEntity<JwtResponse> authenticateAndCreateJwtToken(
+      @Valid @RequestBody JwtRequest jwtRequest) {
+    return new ResponseEntity<>(jwtService.authenticateAndCreateJwt(jwtRequest), HttpStatus.OK);
+
+  }
 
 }
